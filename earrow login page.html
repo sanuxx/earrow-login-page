@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eArrow Login</title>
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            /* Branding Colors */
+            --primary-dark: #1a1d4e;  /* Deep Navy */
+            --primary-light: #00b2f0; /* Bright Sky Blue */
+            --accent: #81dae4;        /* Soft Cyan */
+            --white: #ffffff;
+            
+            /* Glassmorphism Variables */
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: 20px;
+            
+            /* Text Colors */
+            --text-main: #ffffff;
+            --text-muted: #aab0c0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* Deep radial gradient background */
+            background: radial-gradient(circle at 30% 30%, #202455, #0a0b18);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: var(--text-main);
+            position: relative;
+        }
+
+        /* --- MARQUEE BACKGROUND ANIMATION --- */
+        .marquee-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            width: 150vw;
+            height: 100vh;
+            z-index: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .marquee-line {
+            display: flex;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .marquee-content {
+            display: flex;
+            white-space: nowrap;
+            animation: scroll 20s linear infinite;
+        }
+
+        .marquee-line:nth-child(even) .marquee-content {
+            animation-direction: reverse; 
+        }
+
+        .marquee-text {
+            font-size: 6rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 2px var(--primary-light);
+            margin: 0 40px;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* --- GLOW EFFECT BEHIND CARD --- */
+        .glow-spot {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--primary-light) 0%, rgba(0,0,0,0) 70%);
+            opacity: 0.2;
+            top: -100px;
+            left: -100px;
+            z-index: 0;
+            filter: blur(50px);
+        }
+
+        /* --- SPA CONTAINER --- */
+        #app {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- GLASS CARD --- */
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        /* --- LOGO SECTION --- */
+        .logo-container {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-container img {
+            max-width: 100px; /* Adjust this to fit your logo size */
+            height: auto;
+            border-radius: 50%; /* Optional: Makes square logos circular */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- FORM STYLES --- */
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--white);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-light);
+            box-shadow: 0 0 15px rgba(0, 178, 240, 0.2);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            margin-top: 5px;
+            background: linear-gradient(90deg, var(--primary-light), #0081cb);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 178, 240, 0.3);
+        }
+
+        .links {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .links a:hover {
+            color: var(--primary-light);
+        }
+
+        /* --- SPINNER --- */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- DASHBOARD VIEW --- */
+        #dashboard-view {
+            display: none;
+            text-align: center;
+        }
+        
+        #dashboard-view h1 {
+            font-size: 3rem;
+            background: linear-gradient(90deg, #fff, var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-spot"></div>
+
+    <div class="marquee-wrapper">
+        <div class="marquee-line">
+            <div class="marquee-content">
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+            </div>
+            <div class="marquee-content">
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+            </div>
+        </div>
+        <div class="marquee-line">
+            <div class="marquee-content">
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+            </div>
+            <div class="marquee-content">
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+            </div>
+        </div>
+        <div class="marquee-line">
+            <div class="marquee-content">
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+            </div>
+            <div class="marquee-content">
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+                <span class="marquee-text">eArrow</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="app">
+        
+        <div class="login-card" id="login-view">
+            
+            <div class="logo-container">
+                <img src="earrow.png " alt="Company Logo">
+            </div>
+
+            <div class="logo-text">LOGIN</div>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="Enter your ID" required>
+                </div>
+                
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <span id="btnText">Sign In</span>
+                    <div class="spinner" id="btnSpinner"></div>
+                </button>
+
+                <div class="links">
+                    <a href="#">Forgot Password?</a>
+                    <a href="#">Create Account</a>
+                </div>
+            </form>
+        </div>
+
+        <div id="dashboard-view">
+            <h1>eArrow</h1>
+            <p style="color: #aab0c0; margin-top: 10px;">Welcome to the dashboard</p>
+            <br>
+            <button onclick="logout()" class="btn-submit" style="width: 200px; background: rgba(255,255,255,0.1);">Logout</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- SPA LOGIC ---
+        const loginForm = document.getElementById('loginForm');
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Show loading state
+            btnText.style.display = 'none';
+            btnSpinner.style.display = 'block';
+
+            // Simulate Network Request
+            setTimeout(() => {
+                transitionToDashboard();
+            }, 1500);
+        });
+
+        function transitionToDashboard() {
+            // Fade out login
+            loginView.style.opacity = '0';
+            loginView.style.transform = 'scale(0.95)';
+            loginView.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+
+            setTimeout(() => {
+                loginView.style.display = 'none';
+                
+                // Show dashboard
+                dashboardView.style.display = 'block';
+                // Trigger CSS animation
+                requestAnimationFrame(() => {
+                    dashboardView.style.opacity = '1';
+                    dashboardView.style.transform = 'scale(1)';
+                });
+
+                // Reset button
+                btnText.style.display = 'block';
+                btnSpinner.style.display = 'none';
+            }, 500);
+        }
+
+        function logout() {
+            dashboardView.style.display = 'none';
+            loginView.style.display = 'block';
+            setTimeout(() => {
+                loginView.style.opacity = '1';
+                loginView.style.transform = 'scale(1)';
+            }, 10);
+            
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+    </script>
+</body>
+</html>
